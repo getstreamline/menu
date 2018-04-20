@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@getstreamline/menu</title>
+
+  <style>
+    nav ul {
+      list-style-type: none;
+    }
+
+    nav li {
+      display: block;
+    }
+
+    nav a {
+      padding: .2em .6em;
+    }
+
+    nav .sl-menu__link {
+      display: flex;
+    }
+
+    nav .sl-menu__link a {
+      flex: 1 1 auto;
+    }
+
+    nav > ul li > ul {
+      display: none;
+    }
+
+    /* CSS fallback. */
+    nav > ul li:hover > ul,
+    nav > ul li.cy-hover > ul {
+      display: block;
+    }
+
+    nav > ul li.sl-menu--closed:hover > ul,
+    nav > ul li.sl-menu--closed.cy-hover > ul {
+      display: none;
+    }
+
+    nav > ul li.sl-menu--open > ul {
+      display: block;
+    }
+
+    @media (max-width: 767.98px) {
+      nav > ul {
+        padding: 0;
+      }
+    }
+
+    @media (min-width: 768px) {
+      nav .sl-menu__toggle {
+        display: none;
+      }
+
+      nav ul {
+        padding: 0;
+      }
+
+      nav > ul {
+        display: flex;
+      }
+
+      nav li {
+        position: relative;
+      }
+
+      nav > ul li > ul {
+        position: absolute;
+      }
+
+      nav > ul li > ul li > ul {
+        top: 0;
+        left: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <button type="button">Before</button>
+
+  <nav>
+    <ul class="sl-menu">
+      <li>
+        <a href="/">Home</a>
+      </li>
+      <li>
+        <a href="/services">Services</a>
+        <ul>
+          <li>
+            <a href="/faqs">FAQs</a>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="/district-governance">District Governance</a>
+        <ul>
+          <li>
+            <a href="/board">Board</a>
+          </li>
+          <li>
+            <a href="/meetings">Meetings</a>
+          </li>
+          <li>
+            <a href="/our-mission">Mission</a>
+          </li>
+          <li>
+            <a href="/public-records">Public Records</a>
+          </li>
+          <li>
+            <a href="/staff">Staff</a>
+          </li>
+          <li>
+            <a href="/district-transparency">District Transparency</a>
+            <ul>
+              <li>
+                <a href="/california-requirements-for-transparency">CA State Requirements</a>
+              </li>
+              <li>
+                <a href="/sdlf-transparency-certification">SDLF Transparency Certification</a>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a href="/about-special-districts">About Special Districts</a>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="/updates-and-community-calendar">Updates</a>
+        <ul>
+          <li>
+            <a href="/job-opportunities">Job Opportunities</a>
+          </li>
+          <li>
+            <a href="/my-new-section">New Section</a>
+          </li>
+          <li>
+            <a href="/newsletters">Newsletters</a>
+          </li>
+          <li>
+            <a href="/notices">Notices</a>
+          </li>
+          <li>
+            <a href="/press-releases">Press Releases</a>
+          </li>
+          <li>
+            <a href="/sloane-s-brand-new-page">Sloane&#x27;s Page</a>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="/contact-us">Contact Us</a>
+      </li>
+    </ul>
+  </nav>
+
+  <button type="button">After</button>
+
+  <script src="./node_modules/jquery/dist/jquery.js"></script>
+  <script src="./dist/menu.js"></script>
+</body>
+
+</html>
