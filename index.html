@@ -19,14 +19,6 @@
       padding: .2em .6em;
     }
 
-    nav .sl-menu__link {
-      display: flex;
-    }
-
-    nav .sl-menu__link a {
-      flex: 1 1 auto;
-    }
-
     nav > ul li > ul {
       display: none;
     }
@@ -49,6 +41,20 @@
     @media (max-width: 767.98px) {
       nav > ul {
         padding: 0;
+      }
+
+      nav li {
+        display: flex;
+        flex-wrap: wrap;
+      }
+
+      nav a {
+        flex: 1 1 auto;
+        width: 1px;
+      }
+
+      nav li ul {
+        width: 100%;
       }
     }
 

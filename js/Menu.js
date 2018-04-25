@@ -24,8 +24,8 @@ class MenuItem {
   constructor(menu, $element) {
     this.menu = menu;
     this.$element = $element;
-    this.$link = $element.find('a').first()
-      .wrap('<span class="sl-menu__link"></span>');
+    // Allow the link to be in a wrapper for styling purposes.
+    this.$link = $element.find('a').first();
     this.open = false;
 
     if (!this.$element.attr('role')) {
@@ -52,6 +52,8 @@ class MenuItem {
       this.$toggle = $('<button type="button" class="sl-menu__toggle">Toggle menu</button>')
         .attr('aria-controls', $submenuElement.attr('id'))
         .attr('tabindex', '-1')
+        // If the link is in a wrapper, this puts the toggle button in the wrapper for easier
+        // styling.
         .insertAfter(this.$link);
       $submenuElement.addClass('sl-menu__submenu');
       if (!$submenuElement.attr('aria-label')) {
