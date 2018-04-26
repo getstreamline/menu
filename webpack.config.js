@@ -11,6 +11,33 @@ module.exports = {
   externals: {
     jquery: 'jQuery',
   },
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        include: [
+          path.resolve(__dirname, 'js'),
+        ],
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              presets: [
+                ['@babel/env', {
+                  targets: {
+                    browser: true,
+                  },
+                }],
+              ],
+              plugins: [
+                '@babel/transform-runtime',
+              ],
+            },
+          },
+        ],
+      },
+    ],
+  },
   // The default for development is cheap-module-eval-source-map, which causes
   // CORS problems when displaying JavaScript errors in Chrome.
   devtool: isProduction
