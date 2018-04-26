@@ -133,20 +133,14 @@ class Menu {
     });
 
     if (this.focusContainer) {
-      // Triggered when any descendant loses focus.
-      $element.focusout(() => {
-        // We can't rely on event.relatedTarget in Cypress, and possibly certain browsers. Instead,
-        // use document.activeElement during the next iteration of the event loop.
-        setTimeout(() => {
-          if (!document.activeElement || $element.has(document.activeElement).length === 0) {
-            // Focus has moved outside of our focus container, so close all submenus and move the
-            // roving tabindex to the item corresponding to the last open top level submenu.
-            if (this.openIndex !== -1) {
-              this.setActiveElement(this.items[this.openIndex].$link);
-              this.setOpenIndex(-1);
-            }
-          }
-        });
+      // The focusout event is unreliable across browsers, operating systems, front-end test
+      // frameworks, etc. so instead check whether an element that is not a descendant has received
+      // a focus-changing event.
+      $(document).on('keypress click focusin', (event) => {
+        if (this.openIndex !== -1 && $element.has(event.target).length === 0) {
+          this.setActiveElement(this.items[this.openIndex].$link);
+          this.setOpenIndex(-1);
+        }
       });
     }
 
