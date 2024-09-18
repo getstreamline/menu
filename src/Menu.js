@@ -1,12 +1,10 @@
-import $ from 'jquery';
-
-const ESC_KEY = 27;
-const END_KEY = 35;
-const HOME_KEY = 36;
-const LEFT_ARROW = 37;
-const UP_ARROW = 38;
-const RIGHT_ARROW = 39;
-const DOWN_ARROW = 40;
+const ESC_KEY = 'Escape';
+const END_KEY = 'End';
+const HOME_KEY = 'Home';
+const LEFT_ARROW = 'ArrowLeft';
+const UP_ARROW = 'ArrowUp';
+const RIGHT_ARROW = 'ArrowRight';
+const DOWN_ARROW = 'ArrowDown';
 
 const HOVER_ENTER_TIMEOUT = 400;
 const HOVER_MOVE_TIMEOUT = 40;
@@ -20,44 +18,52 @@ function generateSubmenuId() {
   return `sl-menu__submenu_${submenuIndex}`;
 }
 
+function isVisible(element) {
+  if (!element) return false;
+  const style = getComputedStyle(element);
+  return style.display !== 'none' && style.visibility !== 'hidden' && element.offsetParent !== null;
+}
+
 class MenuItem {
-  constructor(menu, $element) {
+  constructor(menu, element) {
     this.menu = menu;
-    this.$element = $element;
+    this.element = element;
     // Allow the link to be in a wrapper for styling purposes.
-    this.$link = $element.find('a').first();
+    this.link = element.querySelector(':scope > a');
     this.open = false;
 
-    if (!this.$element.attr('role')) {
-      this.$element.attr('role', 'none');
+    if (!this.element.getAttribute('role')) {
+      this.element.setAttribute('role', 'none');
     }
-    if (!this.$link.attr('role')) {
-      this.$link.attr('role', 'menuitem');
+    if (!this.link.getAttribute('role')) {
+      this.link.setAttribute('role', 'menuitem');
     }
 
-    const $submenuElement = $element.find('ul').first();
-    if ($submenuElement.length) {
-      if (!$submenuElement.attr('id')) {
-        $submenuElement.attr('id', generateSubmenuId());
+    const submenuElement = element.querySelector(':scope > ul');
+    if (submenuElement) {
+      if (!submenuElement.getAttribute('id')) {
+        submenuElement.setAttribute('id', generateSubmenuId());
       }
 
-      this.submenu = new (menu.constructor)($submenuElement, {
+      this.submenu = new menu.constructor(submenuElement, {
         role: 'menu',
         focusContainer: false,
       });
-      this.$element.addClass('sl-menu--has-submenu');
-      this.$link
-        .attr('aria-haspopup', 'menu')
-        .attr('aria-controls', $submenuElement.attr('id'));
-      this.$toggle = $('<button type="button" class="sl-menu__toggle">Toggle menu</button>')
-        .attr('aria-controls', $submenuElement.attr('id'))
-        .attr('tabindex', '-1')
-        // If the link is in a wrapper, this puts the toggle button in the wrapper for easier
-        // styling.
-        .insertAfter(this.$link);
-      $submenuElement.addClass('sl-menu__submenu');
-      if (!$submenuElement.attr('aria-label')) {
-        $submenuElement.attr('aria-label', this.$link.text());
+      this.element.classList.add('sl-menu--has-submenu');
+      this.link.setAttribute('aria-haspopup', 'menu')
+      this.link.setAttribute('aria-controls', submenuElement.getAttribute('id'));
+      this.toggle = document.createElement('button');
+      this.toggle.textContent = 'Toggle menu';
+      this.toggle.setAttribute('type', 'button');
+      this.toggle.classList.add('sl-menu__toggle');
+      this.toggle.setAttribute('aria-controls', submenuElement.getAttribute('id'));
+      this.toggle.setAttribute('tabindex', '-1');
+      // If the link is in a wrapper, this puts the toggle button in the wrapper for easier
+      // styling.
+      this.link.parentNode.insertBefore(this.toggle, this.link.nextSibling);
+      submenuElement.classList.add('sl-menu__submenu');
+      if (!submenuElement.getAttribute('aria-label')) {
+        submenuElement.setAttribute('aria-label', this.link.textContent);
       }
     }
 
@@ -82,32 +88,34 @@ class MenuItem {
     }
 
     if (this.open) {
-      this.$element.removeClass('sl-menu--closed');
-      this.$element.addClass('sl-menu--open');
+      this.element.classList.remove('sl-menu--closed');
+      this.element.classList.add('sl-menu--open');
     } else {
-      this.$element.removeClass('sl-menu--open');
-      this.$element.addClass('sl-menu--closed');
+      this.element.classList.remove('sl-menu--open');
+      this.element.classList.add('sl-menu--closed');
     }
 
     // Set aria-expanded based on how these classes affect styling. These classes may not have an
     // effect depending on responsive breakpoints.
     // TODO: Efficiently listen for window resize events and update this attribute when breakpoints
     // change.
-    const expanded = this.submenu.$element.is(':visible') ? 'true' : 'false';
-    this.$link.attr('aria-expanded', expanded);
-    this.$toggle.attr('aria-expanded', expanded);
+
+    const expanded = isVisible(this.submenu.element) ? 'true' : 'false';
+    this.link.setAttribute('aria-expanded', expanded);
+    this.toggle.setAttribute('aria-expanded', expanded);
   }
 
   focus() {
-    this.$link.focus();
+    this.link.focus();
   }
 }
 
 class Menu {
-  constructor($element, options = {}) {
-    this.$element = $element;
+  constructor(element, options = {}) {
     // Indicates our ARIA role, typically menubar for the root menu and menu for submenus.
+    this.element = element;
     this.role = options.role || 'menubar';
+
     // Determines whether we are the root menu and therefore the focus container that manages the
     // roving tabindex.
     this.focusContainer = typeof options.focusContainer === 'boolean' ? options.focusContainer : true;
@@ -116,16 +124,16 @@ class Menu {
     this.hoverMode = true;
     this.hoverIntent = false;
 
-    if (!this.$element.attr('role')) {
-      this.$element.attr('role', this.role);
+    if (!this.element.getAttribute('role')) {
+      this.element.setAttribute('role', this.role);
     }
 
     // Triggered when any descendant receives focus.
-    $element.focusin((event) => {
+    this.element.addEventListener('focusin', (event) => {
       // Update the roving tabindex.
       if (this.focusContainer) {
-        const $activeElement = $(event.target);
-        this.setActiveElement($activeElement);
+        const activeElement = event.target;
+        this.setActiveElement(activeElement);
       }
 
       // Detect our orientation so our keyboard navigation make sense.
@@ -136,17 +144,31 @@ class Menu {
       // The focusout event is unreliable across browsers, operating systems, front-end test
       // frameworks, etc. so instead check whether an element that is not a descendant has received
       // a focus-changing event.
-      $(document).on('keypress click focusin', (event) => {
-        if (this.openIndex !== -1 && $element.has(event.target).length === 0) {
-          this.setActiveElement(this.items[this.openIndex].$link);
+      document.addEventListener('keydown', (event) => {
+        if (this.openIndex !== -1 && !this.element.contains(event.target)) {
+          this.setActiveElement(this.items[this.openIndex].link);
+          this.setOpenIndex(-1);
+        }
+      });
+
+      document.addEventListener('click', (event) => {
+        if (this.openIndex !== -1 && !this.element.contains(event.target)) {
+          this.setActiveElement(this.items[this.openIndex].link);
+          this.setOpenIndex(-1);
+        }
+      });
+
+      document.addEventListener('focusin', (event) => {
+        if (this.openIndex !== -1 && !this.element.contains(event.target)) {
+          this.setActiveElement(this.items[this.openIndex].link);
           this.setOpenIndex(-1);
         }
       });
     }
 
     // Close submenu when Escape key is pressed.
-    $element.keydown((event) => {
-      if (event.which === ESC_KEY && this.openIndex !== -1) {
+    this.element.addEventListener('keydown', (event) => {
+      if (event.key === ESC_KEY && this.openIndex !== -1) {
         const item = this.items[this.openIndex];
         this.setOpenIndex(-1);
         item.focus();
@@ -158,28 +180,27 @@ class Menu {
     });
 
     // Detect whether hover mode should be enabled.
-    $element.mouseenter(() => {
+    this.element.addEventListener('mouseenter', () => {
       this.setHoverMode();
     });
 
     let hoverTimeout;
     let hoverMoveTimeout;
-    $element.children('li').each((index, itemElement) => {
-      const $itemElement = $(itemElement);
-      const item = new MenuItem(this, $itemElement);
+    Array.from(this.element.children).forEach((itemElement, index) => {
+      const item = new MenuItem(this, itemElement);
       this.items.push(item);
 
       // Set up all menu item links for roving tabindex.
-      item.$link.attr('tabindex', '-1');
+      item.link.setAttribute('tabindex', '-1');
 
-      $itemElement.keydown((event) => {
+      itemElement.addEventListener('keydown', (event) => {
         // Determine the keys for different behaviors based on our orientation.
         const openKey = this.orientation === 'horizontal' ? DOWN_ARROW : RIGHT_ARROW;
         const closeKey = this.orientation === 'horizontal' ? UP_ARROW : LEFT_ARROW;
         const prevKey = this.orientation === 'horizontal' ? LEFT_ARROW : UP_ARROW;
         const nextKey = this.orientation === 'horizontal' ? RIGHT_ARROW : DOWN_ARROW;
 
-        switch (event.which) {
+        switch (event.key) {
           case openKey:
             if (item.submenu && this.openIndex !== index) {
               this.setOpenIndex(index);
@@ -279,11 +300,11 @@ class Menu {
             break;
 
           default:
-            // Ignore all other keys.
+          // Ignore all other keys.
         }
       });
 
-      $itemElement.mouseenter(() => {
+      itemElement.addEventListener('mouseenter', () => {
         if (!this.hoverMode) {
           return;
         }
@@ -312,7 +333,7 @@ class Menu {
         }
       });
 
-      $itemElement.mousemove(() => {
+      itemElement.addEventListener('mousemove', () => {
         if (!this.hoverMode || this.hoverIntent) {
           return;
         }
@@ -327,7 +348,7 @@ class Menu {
         }, HOVER_MOVE_TIMEOUT);
       });
 
-      $itemElement.mouseleave(() => {
+      itemElement.addEventListener('mouseleave', () => {
         if (!this.hoverMode) {
           return;
         }
@@ -349,8 +370,8 @@ class Menu {
         }
       });
 
-      if (item.submenu && item.$toggle) {
-        item.$toggle.click(() => {
+      if (item.submenu && item.toggle) {
+        item.toggle.addEventListener('click', () => {
           if (this.openIndex === index) {
             this.setOpenIndex(-1);
             item.focus();
@@ -364,7 +385,7 @@ class Menu {
 
     // Move the roving tabindex to the first top level menu item.
     if (this.focusContainer && this.items.length > 0) {
-      this.setActiveElement(this.items[0].$link);
+      this.setActiveElement(this.items[0].link);
     }
     this.setOrientation();
     this.update();
@@ -373,29 +394,29 @@ class Menu {
   /**
    * Updates the roving tabindex with the given descendant.
    */
-  setActiveElement($element) {
+  setActiveElement(element) {
     // Ensure we keep a roving tabindex on one of our descendants, otherwise we effectively become
     // impossible to focus.
-    if (this.$element.has($element).length === 0) {
+    if (!this.element.contains(element)) {
       return;
     }
 
-    if (this.$prevActiveElement) {
-      this.$prevActiveElement.attr('tabindex', '-1');
+    if (this.prevActiveElement) {
+      this.prevActiveElement.setAttribute('tabindex', '-1');
     }
 
-    const $nextActiveElement = $element;
-    $nextActiveElement.attr('tabindex', '0');
-    this.$prevActiveElement = $nextActiveElement;
+    const nextActiveElement = element;
+    nextActiveElement.setAttribute('tabindex', '0');
+    this.prevActiveElement = nextActiveElement;
   }
 
   /**
    * Automatically sets our orientation and updates the ARIA orientation attribute.
    */
   setOrientation() {
-    if (this.$element.is(':visible') && this.items.length >= 2) {
-      const firstOffset = this.items[0].$element.offset();
-      const secondOffset = this.items[1].$element.offset();
+    if (isVisible(this.element) && this.items.length >= 2) {
+      const firstOffset = this.items[0].element.getBoundingClientRect();
+      const secondOffset = this.items[1].element.getBoundingClientRect();
       const dx = Math.abs(secondOffset.left - firstOffset.left);
       const dy = Math.abs(secondOffset.top - firstOffset.top);
 
@@ -410,14 +431,14 @@ class Menu {
       this.orientation = 'vertical';
     }
 
-    this.$element.attr('aria-orientation', this.orientation);
+    this.element.setAttribute('aria-orientation', this.orientation);
   }
 
   /**
    * Automatically sets hover mode based on toggle button visibility.
    */
   setHoverMode() {
-    this.hoverMode = !this.items.some(item => item.$toggle && item.$toggle.is(':visible'));
+    this.hoverMode = !this.items.some(item => item.toggle && isVisible(item.toggle));
   }
 
   /**
