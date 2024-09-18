@@ -1,7 +1,7 @@
-describe('mobile touch toggle interaction', function () {
-  beforeEach(function () {
-    cy.viewport('iphone-6');
-    cy.visit('./index.html');
+describe('mobile touch toggle interaction', function() {
+  beforeEach(function() {
+    cy.viewport('iphone-x');
+    cy.visit('index.html');
     cy.get('nav > ul')
       .as('menu')
       .should('have.descendants', '.sl-menu--has-submenu')
@@ -12,13 +12,13 @@ describe('mobile touch toggle interaction', function () {
       .should('not.be.visible');
   });
 
-  it('has no toggle button for items without submenu', function () {
+  it('has no toggle button for items without submenu', function() {
     cy.contains('a', 'Home')
       .siblings('button')
       .should('not.exist');
   });
 
-  it('opens submenu with toggle button', function () {
+  it('opens submenu with toggle button', function() {
     cy.contains('a', 'Services')
       .siblings('button')
       .click();
@@ -27,7 +27,7 @@ describe('mobile touch toggle interaction', function () {
       .and('be.visible');
   });
 
-  it('opens nested submenus with toggle button', function () {
+  it('opens nested submenus with toggle button', function() {
     cy.contains('a', 'District Governance')
       .siblings('button')
       .click();
@@ -39,7 +39,7 @@ describe('mobile touch toggle interaction', function () {
       .and('be.visible');
   });
 
-  it('closes all submenus when opening another submenu', function () {
+  it('closes all submenus when opening another submenu', function() {
     cy.contains('a', 'District Governance')
       .siblings('button')
       .click();
@@ -58,7 +58,7 @@ describe('mobile touch toggle interaction', function () {
       .should('not.be.visible');
   });
 
-  it('closes all submenus when clicking another control', function () {
+  it('closes all submenus when clicking another control', function() {
     cy.contains('a', 'District Governance')
       .siblings('button')
       .click();

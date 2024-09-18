@@ -1,10 +1,10 @@
-describe('mobile accessible keyboard interaction', function () {
-  const END_KEY = 35;
-  const HOME_KEY = 36;
+describe('mobile accessible keyboard interaction', function() {
+  const END_KEY = 'End';
+  const HOME_KEY = 'Home';
 
-  beforeEach(function () {
-    cy.viewport('iphone-6');
-    cy.visit('./index.html');
+  beforeEach(function() {
+    cy.viewport('iphone-x');
+    cy.visit('index.html');
     cy.get('nav > ul')
       .as('menu')
       .should('have.descendants', '.sl-menu--has-submenu')
@@ -16,18 +16,18 @@ describe('mobile accessible keyboard interaction', function () {
   });
 
   // https://www.w3.org/TR/2017/NOTE-wai-aria-practices-1.1-20171214/#menu
-  describe('ARIA keyboard interaction', function () {
-    describe('vertical menu with vertical submenus', function () {
-      describe('middle item', function () {
-        it('moves focus to first item for Home key', function () {
+  describe('ARIA keyboard interaction', function() {
+    describe('vertical menu with vertical submenus', function() {
+      describe('middle item', function() {
+        it('moves focus to first item for Home key', function() {
           cy.contains('a', 'Services')
             .focus()
-            .trigger('keydown', { which: HOME_KEY });
+            .trigger('keydown', { key: HOME_KEY });
           cy.active()
             .should('have.text', 'Home');
         });
 
-        it('moves focus to previous item for Up arrow key', function () {
+        it('moves focus to previous item for Up arrow key', function() {
           cy.contains('a', 'Services')
             .focus()
             .type('{uparrow}');
@@ -35,7 +35,7 @@ describe('mobile accessible keyboard interaction', function () {
             .should('have.text', 'Home');
         });
 
-        it('moves focus to next item for Down arrow key', function () {
+        it('moves focus to next item for Down arrow key', function() {
           cy.contains('a', 'Services')
             .focus()
             .type('{downarrow}');
@@ -43,17 +43,17 @@ describe('mobile accessible keyboard interaction', function () {
             .should('have.text', 'District Governance');
         });
 
-        it('moves focus to last item for End key', function () {
+        it('moves focus to last item for End key', function() {
           cy.contains('a', 'Services')
             .focus()
-            .trigger('keydown', { which: END_KEY });
+            .trigger('keydown', { key: END_KEY });
           cy.active()
             .should('have.text', 'Contact Us');
         });
       });
 
-      describe('item without submenu', function () {
-        it('keeps focus for Left arrow key', function () {
+      describe('item without submenu', function() {
+        it('keeps focus for Left arrow key', function() {
           cy.contains('a', 'Home')
             .focus()
             .type('{leftarrow}');
@@ -61,7 +61,7 @@ describe('mobile accessible keyboard interaction', function () {
             .should('have.text', 'Home');
         });
 
-        it('keeps focus for Right arrow key', function () {
+        it('keeps focus for Right arrow key', function() {
           cy.contains('a', 'Home')
             .focus()
             .type('{rightarrow}');
@@ -70,8 +70,8 @@ describe('mobile accessible keyboard interaction', function () {
         });
       });
 
-      describe('item with submenu', function () {
-        it('keeps focus for Left arrow key', function () {
+      describe('item with submenu', function() {
+        it('keeps focus for Left arrow key', function() {
           cy.contains('a', 'Services')
             .focus()
             .type('{leftarrow}');
@@ -79,7 +79,7 @@ describe('mobile accessible keyboard interaction', function () {
             .should('have.text', 'Services');
         });
 
-        it('opens submenu for Right arrow key', function () {
+        it('opens submenu for Right arrow key', function() {
           cy.contains('a', 'Services')
             .focus()
             .type('{rightarrow}');
