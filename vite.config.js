@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => {
       minify: 'terser',
       lib: {
         entry: './src/index.js', // Entry point of your library
-        name: 'MenuModern',      // Global variable name when included via a script tag
+        name: 'Menu',            // Global variable name when included via a script tag
         fileName: 'menu',        // Output file name (without extension)
         formats: ['iife'],       // Output format
       },
