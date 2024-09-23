@@ -1,16 +1,11 @@
 // This tests the proof of concept in index.html more than anything.
-describe('desktop mouse hover interaction CSS fallback', function () {
-  it('works when the JavaScript behavior is disabled', function () {
-    cy.once('window:before:load', (window) => {
-      // Cypress.$ is not our document's jQuery, so use the old skool method to
-      // wait for the DOM to load.
-      window.document.addEventListener('DOMContentLoaded', () => {
-        // Simulate JavaScript failing to load by removing the class that
-        // triggers the menu behavior.
-        Cypress.$('nav > ul').removeClass('sl-menu');
-      });
+describe('desktop mouse hover interaction CSS fallback', function() {
+  it('works when the JavaScript behavior is disabled', function() {
+    cy.visit('index.html', {
+      onBeforeLoad(win) {
+        win.__JS_DISABLED__ = true;
+      },
     });
-    cy.visit('./index.html');
 
     // Assert the menu behavior is disabled.
     cy.get('nav > ul').should('not.have.descendants', '.sl-menu--has-submenu');
@@ -34,8 +29,8 @@ describe('desktop mouse hover interaction CSS fallback', function () {
     cy.get('@subsubmenu').should('be.visible');
   });
 
-  it('does not work otherwise', function () {
-    cy.visit('./index.html');
+  it('does not work otherwise', function() {
+    cy.visit('index.html');
 
     // Assert the menu behavior is enabled.
     cy.get('nav > ul').should('have.descendants', '.sl-menu--has-submenu');
