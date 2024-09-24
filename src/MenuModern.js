@@ -19,7 +19,7 @@ function generateSubmenuId() {
 }
 
 function isVisible(element) {
-  if (!element) return false;
+  //if (!element) return false;
   const style = getComputedStyle(element);
   return style.display !== 'none' && style.visibility !== 'hidden' && element.offsetParent !== null;
 }
