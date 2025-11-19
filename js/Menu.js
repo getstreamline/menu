@@ -106,8 +106,8 @@ class MenuItem {
 class Menu {
   constructor($element, options = {}) {
     this.$element = $element;
-    // Indicates our ARIA role, typically menubar for the root menu and menu for submenus.
-    this.role = options.role || 'menubar';
+    // Indicates our ARIA role, typically menu for submenus.
+    this.role = options.role;
     // Determines whether we are the root menu and therefore the focus container that manages the
     // roving tabindex.
     this.focusContainer = typeof options.focusContainer === 'boolean' ? options.focusContainer : true;
@@ -116,7 +116,7 @@ class Menu {
     this.hoverMode = true;
     this.hoverIntent = false;
 
-    if (!this.$element.attr('role')) {
+    if (this.role && !this.$element.attr('role')) {
       this.$element.attr('role', this.role);
     }
 
@@ -404,7 +404,7 @@ class Menu {
       } else {
         this.orientation = 'vertical';
       }
-    } else if (this.role === 'menubar') {
+    } else if (this.focusContainer) {
       this.orientation = 'horizontal';
     } else {
       this.orientation = 'vertical';
