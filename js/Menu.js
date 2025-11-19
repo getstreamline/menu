@@ -47,7 +47,7 @@ class MenuItem {
       });
       this.$element.addClass('sl-menu--has-submenu');
       this.$link
-        .attr('aria-haspopup', 'menu')
+        .attr('aria-haspopup', 'true')
         .attr('aria-controls', $submenuElement.attr('id'));
       this.$toggle = $('<button type="button" class="sl-menu__toggle">Toggle menu</button>')
         .attr('aria-controls', $submenuElement.attr('id'))
