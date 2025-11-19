@@ -32,7 +32,7 @@ class MenuItem {
       this.$element.attr('role', 'none');
     }
     if (!this.$link.attr('role')) {
-      this.$link.attr('role', 'menuitem');
+      this.$link.attr('role', 'link');
     }
 
     const $submenuElement = $element.find('ul').first();
