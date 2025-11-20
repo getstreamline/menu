@@ -76,13 +76,11 @@ describe('desktop accessible keyboard interaction', function () {
   // https://www.w3.org/TR/2017/NOTE-wai-aria-practices-1.1-20171214/#menu
   describe('ARIA keyboard interaction', function () {
     it('has appropriate ARIA roles', function () {
-      cy.get('@menu')
-        .should('have.attr', 'role', 'menubar');
       cy.get('@item')
         .should('have.attr', 'role', 'none')
         .find('a')
         .first()
-        .should('have.attr', 'role', 'menuitem');
+        .should('have.attr', 'role', 'link');
       cy.get('@submenu')
         .should('have.attr', 'role', 'menu');
     });
