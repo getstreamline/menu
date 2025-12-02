@@ -32,7 +32,7 @@ class MenuItem {
       this.$element.attr('role', 'none');
     }
     if (!this.$link.attr('role')) {
-      this.$link.attr('role', 'link');
+      this.$link.attr('role', 'menuitem');
     }
 
     const $submenuElement = $element.find('ul').first();
@@ -47,7 +47,7 @@ class MenuItem {
       });
       this.$element.addClass('sl-menu--has-submenu');
       this.$link
-        .attr('aria-haspopup', 'true')
+        .attr('aria-haspopup', 'menu')
         .attr('aria-controls', $submenuElement.attr('id'));
       this.$toggle = $('<button type="button" class="sl-menu__toggle">Toggle menu</button>')
         .attr('aria-controls', $submenuElement.attr('id'))
@@ -106,6 +106,8 @@ class MenuItem {
 class Menu {
   constructor($element, options = {}) {
     this.$element = $element;
+    // Indicates our ARIA role, typically menubar for the root menu and menu for submenus.
+    this.role = options.role || 'menubar';
     // Indicates our ARIA role, typically menu for submenus.
     this.role = options.role;
     // Determines whether we are the root menu and therefore the focus container that manages the
@@ -116,7 +118,7 @@ class Menu {
     this.hoverMode = true;
     this.hoverIntent = false;
 
-    if (this.role && !this.$element.attr('role')) {
+    if (!this.$element.attr('role')) {
       this.$element.attr('role', this.role);
     }
 
@@ -404,7 +406,7 @@ class Menu {
       } else {
         this.orientation = 'vertical';
       }
-    } else if (this.focusContainer) {
+    } else if (this.role === 'menubar') {
       this.orientation = 'horizontal';
     } else {
       this.orientation = 'vertical';
