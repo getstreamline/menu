@@ -80,7 +80,7 @@ describe('desktop accessible keyboard interaction', function () {
         .should('have.attr', 'role', 'none')
         .find('a')
         .first()
-        .should('have.attr', 'role', 'link');
+        .should('have.attr', 'role', 'menuitem');
       cy.get('@submenu')
         .should('have.attr', 'role', 'menu');
     });
